@@ -1,6 +1,10 @@
 {
   "presets": [
     "es2015",
-    "react"
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+    "transform-decorators-legacy" //识别@ 的装饰器 类似java注解
   ]
 }
