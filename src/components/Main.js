@@ -19,16 +19,16 @@ export default class Main extends React.Component {
   	dispatch(login());
 	}
 
-class AppComponent extends React.Component {
-   render() {
-     return (
-       <div className="index">
-         <img src={yeomanImage} alt="Yeoman Generator" />
-         <div className="notice">mainPage...</div>
-       </div>
-     );
-   }
- }
+
+  render() {
+    return (
+      <div className="index">
+        <img src={yeomanImage} alt="Yeoman Generator" />
+        <div className="notice">mainPage...</div>
+      </div>
+    );
+  }
+}
 
 Main.propTypes = {
 }
