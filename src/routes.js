@@ -1,13 +1,18 @@
 import React from 'react';
 import { Route } from 'react-router';
-import Main from './components/Main';
+import MainPage from './pages/Main';
+import MenuPage from './pages/Menu';
+import TestPage from './pages/Test';
 
 export default () => {
 
 
   return (
-		<Route path="/" component={Main}>
-			<Route path="login" component={Main} />
-		</Route>
+      <Route>
+          <Route path="/test" component={TestPage}/>
+      		<Route path="/" component={MainPage}>
+      			 <Route path="menu" component={MenuPage} />
+      		</Route>
+      </Route>
 	);
 };
