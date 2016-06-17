@@ -104,10 +104,9 @@ export default class Menu extends React.Component {
                                       leftAvatar={<img src={iconImage} style={styles.itemiconbg}/>}
                                       initiallyOpen={initOpen}
                                       key={menuId}
-                                      value={url}
                                       onClick={this.onChangeStyle.bind(this, url)}
                                       primaryTogglesNestedList={true}
-									                    nestedItems={[
+									                    nestedItems={
                                        	R.map(({menuId, menuName, url, iconImage}) => (
                                             <ListItem
                                                style={styles.listItemBg}
@@ -119,7 +118,7 @@ export default class Menu extends React.Component {
                                                leftAvatar={<img src={iconImage} style={styles.iconbg} />}
                                             />
                                         ), nestedItems)
-                                    ]}
+                                    }
                                     nestedListStyle={styles.nestlistItemBg}
                                   />
                               )
@@ -229,18 +228,45 @@ export default class Menu extends React.Component {
             }
 
         }else{
-            menuListDomChildNodes[0].childNodes[0].style.opacity=1;
-            menuListDomChildNodes[0].childNodes[0].style.borderLeft = '2px solid #ff0000';
-            if(menuListDomChildNodes[0].childNodes[1].childNodes[0].childNodes[0] !== undefined){
-                menuListDomChildNodes[0].childNodes[1].childNodes[0].childNodes[0].style.opacity = 1;
-                if(menuListDomChildNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0] !== undefined){
-                    menuListDomChildNodes[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.opacity = 1;
-                }
+            let firstMenuNode = 0;
+            let secondMenuNode = 0;
 
+            // let {menuProps, currentPath} = this.props;
+            // let menu = [];
+            // if(menuProps.list !== undefined){
+            //     menu = menuProps.list;
+            // }
+            //
+            // menu.map((firstItem, firstIndex) => {
+            //
+            //     if(config.rootPath + firstItem.url === currentPath){
+            //         firstMenuNode = firstIndex;
+            //         return;
+            //     }
+            //     firstItem.nestedItems.map((secondItem, secondIndex) =>{
+            //         if(config.rootPath + secondItem.url === currentPath){
+            //             firstMenuNode = firstIndex;
+            //             secondMenuNode = secondIndex;
+            //             return;
+            //         }
+            //     });
+            //
+            // });
+
+            menuListDomChildNodes[firstMenuNode].childNodes[0].style.opacity=1;
+            menuListDomChildNodes[firstMenuNode].childNodes[0].style.borderLeft = '2px solid #ff0000';
+            if(menuListDomChildNodes[firstMenuNode].childNodes[1] !== undefined){
+                if(menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0] !== undefined){
+                    menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].style.opacity = 1;
+                    if(menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].childNodes[0].childNodes[0].childNodes[0] !== undefined){
+                        menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.opacity = 1;
+                    }
+                }
             }
         }
     }
 }
 
 Menu.propTypes = {
+    currentPath:React.PropTypes.string
 }

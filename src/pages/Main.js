@@ -69,7 +69,7 @@ export default class Main extends React.Component {
         return (
             <div style={container}>
                 <div style={styles.left}>
-                    <Menu history={history} />
+                    <Menu history={history} currentPath={this.props.location.pathname}/>
                 </div>
                 <div style={styles.right}>
                     <div style={styles.header}><Header username={username} /></div>
