@@ -9,9 +9,9 @@ export default () => {
 
   return (
       <Route>
-          <Route path="/test" component={TestPage}/>
       		<Route path="/" component={MainPage}>
       			 <Route path="menu" component={MenuPage} />
+             <Route path="test" component={TestPage} />
       		</Route>
       </Route>
 	);
