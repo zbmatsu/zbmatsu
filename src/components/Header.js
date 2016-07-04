@@ -12,7 +12,7 @@ export default class Header extends React.Component {
     render() {
         return (
           <div>
-              <div>header...</div>
+              <div style={{textAlign:'center', fontSize:'22px', lineHeight:'80px'}}>header...</div>
           </div>
         );
     }

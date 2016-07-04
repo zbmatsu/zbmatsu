@@ -16,9 +16,9 @@ const styles = {
         WebkitFlex: 'none',
         flex: 'none',
         width:'229px',
+        minWidth:'229px',
         left:'0px',
         top: '0px',
-        position: 'fixed',
         overflow: 'auto',
         minHeight:'calc(100%)'
     },
