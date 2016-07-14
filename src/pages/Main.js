@@ -8,6 +8,8 @@ import Header from '../components/Header';
 import Content from '../components/Content';
 import Menu from '../components/Menu';
 
+import menuData from '../demoData/menuData';
+
 //let yeomanImage = require('../images/yeoman.png');
 
 const styles = {
@@ -60,16 +62,15 @@ export default class Main extends React.Component {
         console.log(this.props.themeProp);
   	}
 
-
     render() {
 
         let username = this.props.username;
-        let {history} = this.props;
+        let menuDataSource = eval(menuData());
 
         return (
             <div style={container}>
                 <div style={styles.left}>
-                    <Menu history={history} currentPath={this.props.location.pathname}/>
+                    <Menu dataSource={menuDataSource}/>
                 </div>
                 <div style={styles.right}>
                     <div style={styles.header}><Header username={username} /></div>

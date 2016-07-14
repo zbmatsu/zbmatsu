@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import Radium from 'radium';
 import {List, ListItem} from 'material-ui/List';
 import {spacing} from 'material-ui/styles';
-import menuData from '../demoData/menuData';
 import R from 'ramda';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 
 const styles = {
@@ -85,188 +85,150 @@ let homeIconSrc = require('../images/logo.png');
 @Radium
 export default class Menu extends React.Component {
 
+    constructor(props) {
+
+        super(props);
+
+        // when props no changed then no render Component
+        this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+        this.props.dataSource.list = [];
+
+    }
+
+    static contextTypes = {
+        router: React.PropTypes.object
+    }
 
     render() {
+
+        let dataSource = this.props.dataSource;
 
         return (
             <div>
                 <div style={styles.svgLogoContainer}>
                     <img style={styles.svgLogo} src={homeIconSrc}/>
                 </div>
-                <List style={styles.listBg} ref="menuList">
+                <List style={styles.listBg}>
                       {
                           R.map(({menuId, menuName, url, iconImage, nestedItems, initOpen}) => {
 
                             	return(
                                   <ListItem
+                                      ref={'menuItem-' + menuId}
                                       primaryText={menuName}
                                       style={styles.liBg}
                                       leftAvatar={<img src={iconImage} style={styles.itemiconbg}/>}
                                       initiallyOpen={initOpen}
                                       key={menuId}
-                                      onClick={this.onChangeStyle.bind(this, url)}
+                                      onClick={this.handleMenuItem.bind(this, url, menuId)}
                                       primaryTogglesNestedList={true}
 									                    nestedItems={
-                                       	R.map(({menuId, menuName, url, iconImage}) => (
-                                            <ListItem
-                                               style={styles.listItemBg}
-                                               primaryText={menuName}
-                                               key={menuId}
-                                               onMouseEnter={this.onChangeSubItemStyle.bind(this, true)}
-                                               onMouseLeave={this.onChangeSubItemStyle.bind(this, false)}
-                                               onClick={this.onMenuChange.bind(this, url)}
-                                               leftAvatar={<img src={iconImage} style={styles.iconbg} />}
-                                            />
-                                        ), nestedItems)
-                                    }
-                                    nestedListStyle={styles.nestlistItemBg}
+                                         	R.map(({menuId, menuName, url, iconImage}) => (
+                                              <ListItem
+                                                  ref={'menuItem-' + menuId}
+                                                  style={styles.listItemBg}
+                                                  primaryText={menuName}
+                                                  key={menuId}
+                                                  onMouseEnter={this.handleMouse.bind(this, true)}
+                                                  onMouseLeave={this.handleMouse.bind(this, false)}
+                                                  onClick={this.handleSubMenuItem.bind(this, url, menuId)}
+                                                  leftAvatar={<img src={iconImage} style={styles.iconbg} />}
+                                              />
+                                          ), nestedItems)
+                                      }
+                                      nestedListStyle={styles.nestlistItemBg}
                                   />
                               )
-                          }, eval(menuData()))
+                          }, dataSource)
                       }
                   </List>
             </div>
         );
     }
 
-    onChangeStyle = (pathname, event) => {
 
-      let menuListDom = ReactDOM.findDOMNode(this.refs.menuList);
+    changeMenuItem = (menuId) => {
 
-      let menuListDomChildNodes = menuListDom.childNodes;
-    	for(let i=0;i<menuListDomChildNodes.length;i++){
-          menuListDomChildNodes[i].childNodes[0].style.opacity=0.5;
-          menuListDomChildNodes[i].childNodes[0].style.borderLeft = '2px solid #262626';
-      }
-	    event.currentTarget.style.opacity=1;
-	    event.currentTarget.style.borderLeft = '2px solid #ff0000';
+        let dataSource = this.props.dataSource;
 
-      if(pathname !== null && pathname !== ''){
-          this._currentTarget = event.currentTarget;
-          //clean second menu checked style
-          for(let i=0;i<menuListDomChildNodes.length;i++){
-              let secondMenuDom = menuListDomChildNodes[i].childNodes[1];// second menu
-              if(secondMenuDom !== undefined){
-                  let secondMenuDomChildNodes = secondMenuDom.childNodes;
-                  for(let j=0;j<secondMenuDomChildNodes.length;j++){
-                      secondMenuDomChildNodes[j].childNodes[0].style.opacity = 0.5;
-                      if(secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[0].style.overflow === 'hidden'){
-                          secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[1].childNodes[0].style.opacity = 0;
-                      }else{
-                          secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.opacity = 0;
-                      }
-                  }
-              }
-          }
-          this.props.history.pushState(null, pathname);
-      }
-  	}
-
-  	onChangeSubItemStyle = (overFlag, event) => {
-        let domOpacity = null;
-        if(event.currentTarget.childNodes[0].childNodes[1] === undefined){
-            domOpacity = event.currentTarget.childNodes[0].childNodes[0].childNodes[0].style.opacity;
-        }else{
-            domOpacity = event.currentTarget.childNodes[0].childNodes[1].childNodes[0].style.opacity;
-        }
-        if(domOpacity !== '1'){
-            if(overFlag){
-                event.currentTarget.style.opacity = 1;
+        R.map((item) => {
+            let key = 'menuItem-' + item.menuId;
+            let menuListDom = ReactDOM.findDOMNode(this.refs[key]);
+            if(item.menuId === menuId){
+                menuListDom.childNodes[0].style.opacity=1;
+                menuListDom.childNodes[0].style.borderLeft = '2px solid #ff0000';
             }else{
-                event.currentTarget.style.opacity = 0.5;
+                menuListDom.childNodes[0].style.opacity=0.5;
+                menuListDom.childNodes[0].style.borderLeft = '2px solid #262626';
             }
-        }
-
-  	}
-
-    _currentTarget = null;
-  	onMenuChange = (pathname, event) => {
-
-        this._currentTarget = event.currentTarget;
-        let menuListDom = ReactDOM.findDOMNode(this.refs.menuList);
-        let menuListDomChildNodes = menuListDom.childNodes;
-      	for(let i=0;i<menuListDomChildNodes.length;i++){
-            let secondMenuDom = menuListDomChildNodes[i].childNodes[1];// second menu
-            if(secondMenuDom !== undefined){
-                let secondMenuDomChildNodes = secondMenuDom.childNodes;
-                for(let j=0;j<secondMenuDomChildNodes.length;j++){
-                    if(event.currentTarget === secondMenuDomChildNodes[j].childNodes[0]){
-                        event.currentTarget.style.opacity = 1;
-                        event.currentTarget.childNodes[0].childNodes[1].childNodes[0].style.opacity = 1;
-                    }else{
-                        secondMenuDomChildNodes[j].childNodes[0].style.opacity = 0.5;
-                        if(secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[0].style.overflow === 'hidden'){
-                            secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[1].childNodes[0].style.opacity = 0;
-                        }else{
-                            secondMenuDomChildNodes[j].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.opacity = 0;
-                        }
-
-                    }
-                }
-            }
-        }
-        this.props.history.pushState(null, pathname);
-  	}
-
-
-    componentDidUpdate(){
-
-        let menuListDom = ReactDOM.findDOMNode(this.refs.menuList);
-        let menuListDomChildNodes = menuListDom.childNodes;
-        for(let i=0;i<menuListDomChildNodes.length;i++){
-            menuListDomChildNodes[i].childNodes[0].style.opacity=0.5;
-            menuListDomChildNodes[i].childNodes[0].style.borderLeft = '2px solid #262626';
-        }
-        if(this._currentTarget !== null) {
-            this._currentTarget.style.opacity = 1;
-
-            if(this._currentTarget.parentNode.parentNode.previousSibling === null){
-                this._currentTarget.style.borderLeft = '2px solid #ff0000';
-            }else{
-              this._currentTarget.parentNode.parentNode.previousSibling.style.opacity=1;
-              this._currentTarget.parentNode.parentNode.previousSibling.style.borderLeft = '2px solid #ff0000';
-            }
-
-        }else{
-            let firstMenuNode = 0;
-            let secondMenuNode = 0;
-
-            // let {menuProps, currentPath} = this.props;
-            // let menu = [];
-            // if(menuProps.list !== undefined){
-            //     menu = menuProps.list;
-            // }
-            //
-            // menu.map((firstItem, firstIndex) => {
-            //
-            //     if(config.rootPath + firstItem.url === currentPath){
-            //         firstMenuNode = firstIndex;
-            //         return;
-            //     }
-            //     firstItem.nestedItems.map((secondItem, secondIndex) =>{
-            //         if(config.rootPath + secondItem.url === currentPath){
-            //             firstMenuNode = firstIndex;
-            //             secondMenuNode = secondIndex;
-            //             return;
-            //         }
-            //     });
-            //
-            // });
-
-            menuListDomChildNodes[firstMenuNode].childNodes[0].style.opacity=1;
-            menuListDomChildNodes[firstMenuNode].childNodes[0].style.borderLeft = '2px solid #ff0000';
-            if(menuListDomChildNodes[firstMenuNode].childNodes[1] !== undefined){
-                if(menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0] !== undefined){
-                    menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].style.opacity = 1;
-                    if(menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].childNodes[0].childNodes[0].childNodes[0] !== undefined){
-                        menuListDomChildNodes[firstMenuNode].childNodes[1].childNodes[secondMenuNode].childNodes[0].childNodes[0].childNodes[0].childNodes[0].style.opacity = 1;
-                    }
-                }
-            }
-        }
+        }, dataSource);
     }
+
+    changeSubMenuItem = (menuId) => {
+
+        let dataSource = this.props.dataSource;
+
+        R.map((item) => {
+
+            R.map((subItem) => {
+
+                let key = 'menuItem-' + subItem.menuId;
+                let menuListDom = ReactDOM.findDOMNode(this.refs[key]);
+
+                let textDom = menuListDom.childNodes[0];
+
+                //需要自己定位节点
+                let iconDom = textDom.childNodes[0].childNodes[1] === undefined ? textDom.childNodes[0].childNodes[0].childNodes[0] : textDom.childNodes[0].childNodes[1].childNodes[0];
+
+                if(subItem.menuId === menuId){//需要点亮的子菜单
+
+                    this.changeMenuItem(item.menuId);//点亮父菜单
+                    textDom.style.opacity=1;//菜单字体
+                    iconDom.style.opacity=1;//菜单图标
+                }else{
+                    textDom.style.opacity=0.5;
+                    iconDom.style.opacity=0;
+                }
+
+            }, item.nestedItems);
+
+        }, dataSource);
+    }
+
+    handleMenuItem = (pathname, menuId) => {
+
+        this.changeMenuItem(menuId);
+
+        if(pathname !== null && pathname !== ''){
+
+            this.changeSubMenuItem(null);
+            //push(pathname, search, state)  search:'?a=query' state:{ the: 'state' }
+            this.context.router.push(pathname);
+        }
+  	}
+
+  	handleSubMenuItem = (pathname, menuId) => {
+
+        this.changeSubMenuItem(menuId);
+        this.context.router.push(pathname);
+  	}
+
+    //鼠标移动到菜单的事件
+  	handleMouse = (overFlag, event) => {
+
+        let currentDom = event.currentTarget.childNodes[0];
+        let domOpacity = currentDom.childNodes[1] === undefined ? currentDom.childNodes[0].childNodes[0] : currentDom.childNodes[1].childNodes[0];
+
+        if(domOpacity.style.opacity !== '1'){
+            overFlag === true ? event.currentTarget.style.opacity = 1 : event.currentTarget.style.opacity = 0.5;
+        }
+
+  	}
+
+
 }
 
 Menu.propTypes = {
-    currentPath:React.PropTypes.string
+    defaultPath:React.PropTypes.string,
+    dataSource:React.PropTypes.array
 }

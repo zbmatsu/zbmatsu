@@ -2,6 +2,8 @@ import React from 'react';
 import Radium from 'radium';
 //import Paper from 'material-ui/Paper';
 
+import TableGrid from '../components/TableGrid';
+import getTableData from '../demoData/tableData'
 
 const styles = {
     //外部样式
@@ -28,6 +30,20 @@ const styles = {
 
 };
 
+const renderJson = {
+    pageSize:5,
+    title:'Tabels title',
+    sortField:'',
+    conditions:{},
+    dataSource:[],
+    columns:[
+        { text: 'iconImage', dataIndex: 'iconImage'},
+        { text: 'menuDesc', dataIndex: 'menuDesc'},
+        { text: 'menuName', dataIndex: 'menuName'},
+        { text: 'menuId', dataIndex: 'menuId'},
+        { text: 'isEnable', dataIndex: 'isEnable'}
+    ]
+};
 
 
 @Radium
@@ -35,6 +51,9 @@ export default class Test extends React.Component {
 
 
     render() {
+
+        renderJson.dataSource = getTableData();
+        console.log(renderJson.dataSource);
 
         return (
             <div>
@@ -46,10 +65,20 @@ export default class Test extends React.Component {
                         组件样式,组件样式,组件样式,组件样式,组件样式,组件样式,组件样式,
                         组件样式,组件样式,组件样式,组件样式,组件样式,组件样式,组件样式.
                     </div>
+
+                    <TableGrid style={styles.widgetlargerStyle} renderJson={renderJson} changePagination={this.changePagination}/>
                 </div>
 
             </div>
         );
+    }
+
+    //table分页方法
+    changePagination = (page) => {
+
+        if(isNaN(page) === false){//是数字
+            console.log(page);
+        }
     }
 }
 
