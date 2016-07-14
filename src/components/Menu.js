@@ -202,7 +202,7 @@ export default class Menu extends React.Component {
         if(pathname !== null && pathname !== ''){
 
             this.changeSubMenuItem(null);
-            //push(pathname, search, state)  search:'?a=query' state:{ the: 'state' }
+            //let route = {pathname: pathname, query: {menuId: menuId}, state: {menuId: menuId}};
             this.context.router.push(pathname);
         }
   	}
@@ -210,6 +210,7 @@ export default class Menu extends React.Component {
   	handleSubMenuItem = (pathname, menuId) => {
 
         this.changeSubMenuItem(menuId);
+        //let route = {pathname: pathname, query: {menuId: menuId}, state: {menuId: menuId}};
         this.context.router.push(pathname);
   	}
 
